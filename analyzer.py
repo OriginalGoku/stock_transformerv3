@@ -46,36 +46,48 @@ def analyze_results(result_df: pd.DataFrame, y_pred, config: Config):
     #     )
     # else:
 
-    trade_results = []
-    for _, row in result_df.iterrows():
-        y = y_pred.loc[_].values[0]
+    # trade_results = []
+    # for _, row in result_df.iterrows():
+    #     y = y_pred.loc[_].values[0]
+    #
+    #     # Taking short trades
+    #     if (row['open'] - (row['atr'] / 2)) > y:
+    #         # y_pred is reached
+    #         if row['low'] <= y:
+    #             result = trade_results.append(np.log(row['open'] / y))
+    #
+    #         # y_pred is not reached
+    #         else:
+    #             result = np.log(row['open'] / row['close'])
+    #
+    #     # Taking Long Trades
+    #     elif (row['open'] + (row['atr'] / 2)) < y:
+    #         # y_pred is reached
+    #         if row['high'] >= y:
+    #             result = np.log(y / row['open'])
+    #
+    #         # y_pred is not reached
+    #         else:
+    #             result = np.log(row['close'] / row['open'])
+    #     else:
+    #         result = 0.0
+    #         # No trade was taken
+    #     if type(result) != 'int':
+    #         result = result[0]
+    #     trade_results.append(result)
 
-        # Taking short trades
-        if (row['open'] - (row['atr'] / 2)) > y:  # row['y_pred']
-            # y_pred is reached
-            if row['low'] <= y:  # row['y_pred']:
-                # result_df.loc[_, 'trade_result'] = np.log(row['open'] / row['y_pred'])
-                trade_results.append(np.log(row['open'] / y))  # row['y_pred']))
-            # y_pred is not reached
-            else:
-                # result_df.loc[_, 'trade_result'] = np.log(row['open'] / row['close'])
-                trade_results.append(np.log(row['open'] / row['close']))
+    def take_short_trade(row, y):
+        return np.log(row['open'] / y) if row['low'] <= y else np.log(row['open'] / row['close'])
 
-        # Taking Long Trades
-        elif (row['open'] + (row['atr'] / 2)) < y:  # row['y_pred']:
-            # y_pred is reached
-            if row['high'] >= y:  # row['y_pred']:
-                # result_df.loc[_, 'trade_result'] = np.log(
-                #     y / row['open'])  # np.log(row['y_pred'] / row['open'])
-                trade_results.append(np.log(y / row['open']))
+    def take_long_trade(row, y):
+        return np.log(y / row['open']) if row['high'] >= y else np.log(row['close'] / row['open'])
 
-            # y_pred is not reached
-            else:
-                # result_df.loc[_, 'trade_result'] = np.log(row['close'] / row['open'])
-                trade_results.append(np.log(row['close'] / row['open']))
-        else:
-            # No trade was taken
-            trade_results.append(0.0)
+    trade_results = [
+        take_short_trade(row, y_pred.loc[_].values[0]) if (row['open'] - (row['atr'] / 2)) > y_pred.loc[_].values[0]
+        else take_long_trade(row, y_pred.loc[_].values[0]) if (row['open'] + (row['atr'] / 2)) < y_pred.loc[_].values[0]
+        else 0.0
+        for _, row in result_df.iterrows()
+    ]
 
     # return result_df
     return trade_results

@@ -27,13 +27,13 @@ def train_model(X_train, y_train, config, model_name):
 
 
 def generate_results(global_config):
-    model_names = ['conv1D_model', 'gru_model']#, 'lstm_model', 'transformer']
+    model_names = ['conv1D_model', 'gru_model', 'lstm_model', 'transformer']
     model_list = []
     y_pred_list = []
     y_pred_from_model = []
     for model_name in model_names:
         if model_name != 'transformer':
-            global_config.transformer_setting['epoc'] = 50
+            global_config.transformer_setting['epoc'] = 30
         else:
             global_config.transformer_setting['epoc'] = 3
 
