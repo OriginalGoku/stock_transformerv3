@@ -1,0 +1,7 @@
+tensorflow==2.12.0
+
+matplotlib==3.4.3
+mplfinance==0.12.7a17
+
+pandas>1.2.0
+pydot>=1.4.2
